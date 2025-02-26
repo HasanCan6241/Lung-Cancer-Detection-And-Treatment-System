@@ -1,0 +1,510 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="prediction-detail-section py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <!-- Başlık Bölümü -->
+                <div class="header-section mb-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h2 class="display-6 fw-bold text-gradient mb-0">Tahmin Detayları</h2>
+                            <p class="text-muted">
+                                <i class="bi bi-clock me-2"></i>{{ prediction.created_at|date:"d/m/Y H:i" }}
+                            </p>
+                        </div>
+                        <div class="prediction-score">
+                            <div class="score-circle {% if prediction.confidence_score > 75 %}high{% elif prediction.confidence_score > 50 %}medium{% else %}low{% endif %}">
+                                {{ prediction.confidence_score|floatformat:0 }}%
+                            </div>
+                            <span class="score-label">Güven Skoru</span>
+                        </div>
+                    </div>
+                    <div class="accent-bar"></div>
+                </div>
+
+                <!-- Ana İçerik -->
+                <div class="prediction-content">
+                    <!-- Sonuç Kartı -->
+                    <div class="result-card mb-4">
+                        <div class="result-header">
+                            <h3 class="result-title">Tahmin Sonucu</h3>
+                            <span class="result-badge">{{ prediction.prediction_result }}</span>
+                        </div>
+                    </div>
+
+                    <div class="row g-4">
+                        <!-- Kişisel Bilgiler -->
+                        <div class="col-md-6">
+                            <div class="info-card">
+                                <div class="card-icon">
+                                    <i class="bi bi-person-badge"></i>
+                                </div>
+                                <h3 class="card-title">Kişisel Bilgiler</h3>
+                                <div class="info-list">
+                                    <div class="info-item">
+                                        <span class="label">Yaş:</span>
+                                        <span class="value">{{ prediction.age }}</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="label">Cinsiyet:</span>
+                                        <span class="value">{{ prediction.get_gender_display }}</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="label">Konum:</span>
+                                        <span class="value">{{ prediction.location }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Sigara Geçmişi -->
+                        <div class="col-md-6">
+                            <div class="info-card">
+                                <div class="card-icon">
+                                    <i class="bi bi-lungs"></i>
+                                </div>
+                                <h3 class="card-title">Sigara Geçmişi</h3>
+                                <div class="info-list">
+                                    <div class="info-item">
+                                        <span class="label">Sigara Kullanımı:</span>
+                                        <span class="value status-badge {% if prediction.smoking_history %}bg-danger{% else %}bg-success{% endif %}">
+                                            {% if prediction.smoking_history %}Evet{% else %}Hayır{% endif %}
+                                        </span>
+                                    </div>
+                                    {% if prediction.smoking_history %}
+                                    <div class="info-item">
+                                        <span class="label">Sigara Yılı:</span>
+                                        <span class="value">{{ prediction.smoking_years|default:"Belirtilmemiş" }}</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="label">Günlük Sigara:</span>
+                                        <span class="value">{{ prediction.cigarettes_per_day|default:"Belirtilmemiş" }} adet</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="label">Bırakma Tarihi:</span>
+                                        <span class="value">{{ prediction.quit_smoking_date|date:"d/m/Y"|default:"Belirtilmemiş" }}</span>
+                                    </div>
+                                    {% endif %}
+                                    <div class="info-item">
+                                        <span class="label">Pasif İçicilik:</span>
+                                        <span class="value status-badge {% if prediction.passive_smoking %}bg-warning{% else %}bg-success{% endif %}">
+                                            {% if prediction.passive_smoking %}Var{% else %}Yok{% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tıbbi Geçmiş -->
+                        <div class="col-md-6">
+                            <div class="info-card">
+                                <div class="card-icon">
+                                    <i class="bi bi-clipboard2-pulse"></i>
+                                </div>
+                                <h3 class="card-title">Tıbbi Geçmiş</h3>
+                                <div class="info-list">
+                                    <div class="info-item">
+                                        <span class="label">Akciğer Hastalığı:</span>
+                                        <span class="value status-badge {% if prediction.has_lung_disease %}bg-danger{% else %}bg-success{% endif %}">
+                                            {% if prediction.has_lung_disease %}Var{% else %}Yok{% endif %}
+                                        </span>
+                                    </div>
+                                    {% if prediction.has_lung_disease %}
+                                    <div class="info-item">
+                                        <span class="label">Hastalık Detayı:</span>
+                                        <span class="value">{{ prediction.lung_diseases|default:"Belirtilmemiş" }}</span>
+                                    </div>
+                                    {% endif %}
+                                    <div class="info-item">
+                                        <span class="label">Geçirilmiş Enfeksiyon:</span>
+                                        <span class="value status-badge {% if prediction.previous_lung_infections %}bg-warning{% else %}bg-success{% endif %}">
+                                            {% if prediction.previous_lung_infections %}Var{% else %}Yok{% endif %}
+                                        </span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="label">Kronik Öksürük:</span>
+                                        <span class="value status-badge {% if prediction.chronic_cough %}bg-warning{% else %}bg-success{% endif %}">
+                                            {% if prediction.chronic_cough %}Var{% else %}Yok{% endif %}
+                                        </span>
+                                    </div>
+                                    {% if prediction.chronic_cough %}
+                                    <div class="info-item">
+                                        <span class="label">Öksürük Süresi:</span>
+                                        <span class="value">{{ prediction.cough_duration }} ay</span>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Risk Faktörleri -->
+                        <div class="col-md-6">
+                            <div class="info-card">
+                                <div class="card-icon">
+                                    <i class="bi bi-exclamation-triangle"></i>
+                                </div>
+                                <h3 class="card-title">Risk Faktörleri</h3>
+                                <div class="info-list">
+                                    <div class="info-item">
+                                        <span class="label">Mesleki Maruziyet:</span>
+                                        <span class="value status-badge {% if prediction.occupational_exposure %}bg-danger{% else %}bg-success{% endif %}">
+                                            {% if prediction.occupational_exposure %}Var{% else %}Yok{% endif %}
+                                        </span>
+                                    </div>
+                                    {% if prediction.occupational_exposure %}
+                                    <div class="info-item">
+                                        <span class="label">Maruziyet Detayı:</span>
+                                        <span class="value">{{ prediction.exposure_details }}</span>
+                                    </div>
+                                    {% endif %}
+                                    <div class="info-item">
+                                        <span class="label">Hava Kirliliği:</span>
+                                        <span class="value status-badge {% if prediction.air_pollution_exposure %}bg-warning{% else %}bg-success{% endif %}">
+                                            {% if prediction.air_pollution_exposure %}Var{% else %}Yok{% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Semptomlar -->
+                        <div class="col-12">
+                            <div class="info-card">
+                                <div class="card-icon">
+                                    <i class="bi bi-activity"></i>
+                                </div>
+                                <h3 class="card-title">Semptomlar</h3>
+                                <div class="symptoms-grid">
+                                    <div class="symptom-item {% if prediction.shortness_of_breath %}active{% endif %}">
+                                        <i class="bi bi-lungs"></i>
+                                        <span>Nefes Darlığı</span>
+                                    </div>
+                                    <div class="symptom-item {% if prediction.chest_pain %}active{% endif %}">
+                                        <i class="bi bi-heart-pulse"></i>
+                                        <span>Göğüs Ağrısı</span>
+                                    </div>
+                                    <div class="symptom-item {% if prediction.weight_loss %}active{% endif %}">
+                                        <i class="bi bi-graph-down"></i>
+                                        <span>Kilo Kaybı</span>
+                                    </div>
+                                    <div class="symptom-item {% if prediction.fatigue %}active{% endif %}">
+                                        <i class="bi bi-battery-half"></i>
+                                        <span>Yorgunluk</span>
+                                    </div>
+                                    <div class="symptom-item {% if prediction.sputum_production %}active{% endif %}">
+                                        <i class="bi bi-droplet"></i>
+                                        <span>Balgam Üretimi</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Görüntü -->
+                        <div class="col-12">
+                            <div class="info-card">
+                                <div class="card-icon">
+                                    <i class="bi bi-image"></i>
+                                </div>
+                                <h3 class="card-title">Görüntü</h3>
+                                <div class="image-container">
+                                    <img src="{{ prediction.image.url }}" class="prediction-image" alt="Tahmin Görüntüsü">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Aksiyon Butonları -->
+                    <div class="action-section mt-4 text-center">
+                        <a href="{% url 'download_prediction' prediction.id %}" class="action-button download-btn">
+                            <i class="bi bi-download me-2"></i>Raporu İndir
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .prediction-detail-section {
+        background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+        min-height: 100vh;
+    }
+
+    .text-gradient {
+        background: linear-gradient(45deg, #2c3e50 0%, #3498db 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .accent-bar {
+        height: 4px;
+        width: 60px;
+        background: linear-gradient(90deg, #3498db 0%, #2980b9 100%);
+        margin-top: 1rem;
+        border-radius: 2px;
+    }
+
+    /* Skor Dairesi */
+    .prediction-score {
+        text-align: center;
+    }
+
+    .score-circle {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: white;
+        margin-bottom: 0.5rem;
+    }
+
+    .score-circle.high {
+        background: linear-gradient(45deg, #27ae60, #2ecc71);
+    }
+
+    .score-circle.medium {
+        background: linear-gradient(45deg, #f39c12, #f1c40f);
+    }
+
+    .score-circle.low {
+        background: linear-gradient(45deg, #e74c3c, #c0392b);
+    }
+
+    .score-label {
+        font-size: 0.875rem;
+        color: #666;
+    }
+
+    /* Sonuç Kartı */
+    .result-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .result-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .result-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #2c3e50;
+        margin: 0;
+    }
+
+    .result-badge {
+        background: linear-gradient(45deg, #3498db, #2980b9);
+        color: white;
+        padding: 0.5rem 1.5rem;
+        border-radius: 20px;
+        font-weight: 500;
+    }
+
+    /* Bilgi Kartları */
+    .info-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        height: 100%;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .card-icon {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        font-size: 1.5rem;
+        color: #3498db;
+        opacity: 0.2;
+    }
+
+    .card-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 1.5rem;
+        padding-right: 2rem;
+    }
+
+    .info-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .info-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.5rem 0;
+        border-bottom: 1px dashed rgba(0,0,0,0.1);
+    }
+
+    .info-item:last-child {
+        border-bottom: none;
+    }
+
+    .label {
+        color: #666;
+        font-weight: 500;
+    }
+
+    .value {
+        font-weight: 500;
+        color: #2c3e50;
+    }
+
+    .status-badge {
+        padding: 0.25rem 1rem;
+        border-radius: 20px;
+        font-size: 0.875rem;
+        color: white;
+    }
+
+    .bg-success {
+        background: linear-gradient(45deg, #27ae60, #2ecc71);
+    }
+
+    .bg-warning {
+        background: linear-gradient(45deg, #f39c12, #f1c40f);
+    }
+
+    .bg-danger {
+        background: linear-gradient(45deg, #e74c3c, #c0392b);
+    }
+
+    /* Semptomlar Grid */
+    .symptoms-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+
+    .symptom-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        border-radius: 8px;
+        background: #f8f9fa;
+        opacity: 0.5;
+        transition: all 0.3s ease;
+    }
+
+    .symptom-item.active {
+        background: #e3f2fd;
+        opacity: 1;
+        box-shadow: 0 2px 4px rgba(52, 152, 219, 0.1);
+    }
+
+    .symptom-item i {
+        font-size: 1.5rem;
+        color: #3498db;
+    }
+
+    .symptom-item span {
+        font-weight: 500;
+        color: #2c3e50;
+    }
+
+    /* Görüntü Konteyner */
+    .image-container {
+        margin-top: 1rem;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .prediction-image {
+        width: 100%;
+        height: auto;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+
+    .prediction-image:hover {
+        transform: scale(1.02);
+    }
+
+    /* Aksiyon Butonları */
+    .action-section {
+        margin-top: 2rem;
+    }
+
+    .action-button {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.75rem 2rem;
+        border-radius: 30px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .download-btn {
+        background: linear-gradient(90deg, #3498db 0%, #2980b9 100%);
+        color: white;
+    }
+
+    .download-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+        color: white;
+    }
+
+    /* Responsive Tasarım */
+    @media (max-width: 768px) {
+        .prediction-content {
+            padding: 1rem;
+        }
+
+        .symptoms-grid {
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        }
+
+        .score-circle {
+            width: 60px;
+            height: 60px;
+            font-size: 1.25rem;
+        }
+
+        .info-item {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+
+        .card-icon {
+            display: none;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .result-header {
+            flex-direction: column;
+            gap: 1rem;
+            text-align: center;
+        }
+
+        .action-button {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+{% endblock %}

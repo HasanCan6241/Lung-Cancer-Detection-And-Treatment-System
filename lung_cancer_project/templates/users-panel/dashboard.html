@@ -1,0 +1,522 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<!-- Header Section -->
+<div class="bg-gradient-primary-to-secondary py-4 mb-5">
+    <div class="container">
+        <h1 class="text-white fw-bold">BT Görüntüsü Analizi</h1>
+        <p class="text-white-50 mb-0">Lütfen analiz için gerekli bilgileri eksiksiz doldurunuz.</p>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Ana Form Kartı -->
+            <div class="card shadow-sm border-0 rounded-4 mb-4">
+                <div class="card-body p-4">
+                    <form method="post" enctype="multipart/form-data" id="predictionForm" class="needs-validation" novalidate>
+                        {% csrf_token %}
+
+                        <!-- Görüntü Yükleme Alanı -->
+                        <div class="upload-area mb-4 text-center p-4 rounded-3 bg-light">
+                            <div class="upload-icon mb-3">
+                                <i class="bi bi-cloud-upload fs-1 text-primary"></i>
+                            </div>
+                            <div class="upload-text mb-3">
+                                <h5 class="mb-2">BT Görüntüsü Yükle</h5>
+                                <p class="text-muted small mb-0">JPEG, PNG veya DICOM formatında, maksimum 5MB</p>
+                            </div>
+                            <div class="upload-input">
+                                {{ form.image|as_crispy_field }}
+                            </div>
+                        </div>
+
+                        <!-- Kişisel Bilgiler -->
+                        <div class="card mb-4">
+                            <div class="card-header bg-light">
+                                <h5 class="mb-0">Kişisel Bilgiler</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        {{ form.age|as_crispy_field }}
+                                    </div>
+                                    <div class="col-md-6">
+                                        {{ form.gender|as_crispy_field }}
+                                    </div>
+                                    <div class="col-12">
+                                        {{ form.location|as_crispy_field }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Sigara Kullanım Bilgileri -->
+                        <div class="card mb-4">
+                            <div class="card-header bg-light">
+                                <h5 class="mb-0">Sigara Kullanım Bilgileri</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="form-check form-switch mb-3">
+                                    {{ form.smoking_history }}
+                                    <label class="form-check-label" for="{{ form.smoking_history.id_for_label }}">
+                                        Sigara Kullanım Geçmişi
+                                    </label>
+                                </div>
+                                <div class="form-check form-switch">
+                                    {{ form.passive_smoking }}
+                                    <label class="form-check-label" for="{{ form.passive_smoking.id_for_label }}">
+                                        Pasif İçicilik
+                                    </label>
+                                </div>
+                                <div class="smoking-details" id="smokingDetails">
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            {{ form.smoking_years|as_crispy_field }}
+                                        </div>
+                                        <div class="col-md-6">
+                                            {{ form.cigarettes_per_day|as_crispy_field }}
+                                        </div>
+                                        <div class="col-md-6">
+                                            {{ form.quit_smoking_date|as_crispy_field }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tıbbi Geçmiş -->
+                        <div class="card mb-4">
+                            <div class="card-header bg-light">
+                                <h5 class="mb-0">Tıbbi Geçmiş</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-3">
+                                    <div class="col-12">
+                                        <div class="form-check form-switch">
+                                            {{ form.has_lung_disease }}
+                                            <label class="form-check-label" for="{{ form.has_lung_disease.id_for_label }}">
+                                                Akciğer Hastalığı Geçmişi
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-12" id="lungDiseaseDetails">
+                                        {{ form.lung_diseases|as_crispy_field }}
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-check form-switch">
+                                            {{ form.previous_lung_infections }}
+                                            <label class="form-check-label" for="{{ form.previous_lung_infections.id_for_label }}">
+                                                Geçirilmiş Akciğer Enfeksiyonu
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-check form-switch">
+                                            {{ form.family_history }}
+                                            <label class="form-check-label" for="{{ form.family_history.id_for_label }}">
+                                                Ailede Kanser Geçmişi
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Risk Faktörleri -->
+                        <div class="card mb-4">
+                            <div class="card-header bg-light">
+                                <h5 class="mb-0">Risk Faktörleri</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <div class="form-check form-switch">
+                                            {{ form.occupational_exposure }}
+                                            <label class="form-check-label" for="{{ form.occupational_exposure.id_for_label }}">
+                                                Mesleki Maruziyet
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-check form-switch">
+                                            {{ form.air_pollution_exposure }}
+                                            <label class="form-check-label" for="{{ form.air_pollution_exposure.id_for_label }}">
+                                                Hava Kirliliği Maruziyeti
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-12" id="exposureDetails">
+                                        {{ form.exposure_details|as_crispy_field }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Semptomlar -->
+                        <div class="card mb-4">
+                            <div class="card-header bg-light">
+                                <h5 class="mb-0">Semptomlar</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <div class="form-check form-switch">
+                                            {{ form.shortness_of_breath }}
+                                            <label class="form-check-label" for="{{ form.shortness_of_breath.id_for_label }}">
+                                                Nefes Darlığı
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-check form-switch">
+                                            {{ form.chest_pain }}
+                                            <label class="form-check-label" for="{{ form.chest_pain.id_for_label }}">
+                                                Göğüs Ağrısı
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-check form-switch">
+                                            {{ form.weight_loss }}
+                                            <label class="form-check-label" for="{{ form.weight_loss.id_for_label }}">
+                                                Kilo Kaybı
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-check form-switch">
+                                            {{ form.fatigue }}
+                                            <label class="form-check-label" for="{{ form.fatigue.id_for_label }}">
+                                                Yorgunluk
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-check form-switch">
+                                            {{ form.sputum_production }}
+                                            <label class="form-check-label" for="{{ form.sputum_production.id_for_label }}">
+                                                Balgam Çıkarma
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-check form-switch">
+                                            {{ form.chronic_cough }}
+                                            <label class="form-check-label" for="{{ form.chronic_cough.id_for_label }}">
+                                                Kronik Öksürük
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-12" id="coughDurationDiv">
+                                        {{ form.cough_duration|as_crispy_field }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Gönder Butonu -->
+                        <div class="text-end">
+                            <button type="submit" class="btn btn-primary btn-lg px-5 shadow-lg">
+                                <i class="bi bi-search me-2"></i>Tahmin et
+                            </button>
+                        </div>
+                    </form>
+
+                  {% if prediction_result %}
+                    <div class="alert alert-danger alert-dismissible fade show mt-4" role="alert">
+                        <i class="bi bi-x-circle me-2"></i>
+                        <strong>Tahmin Sonucu:</strong> {{ prediction_result }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                  {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Bilgi Kartı -->
+        <div class="col-lg-4">
+            <div class="card shadow-sm border-0 rounded-4 mb-4">
+                <div class="card-body p-4">
+                    <h5 class="card-title mb-4">Bilgilendirme</h5>
+                    <div class="info-item mb-3">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="bi bi-shield-check text-success me-2"></i>
+                            <h6 class="mb-0">Veri Güvenliği</h6>
+                        </div>
+                        <p class="text-muted small mb-0">Tüm verileriniz KVKK kapsamında güvenle saklanmaktadır.</p>
+                    </div>
+                    <div class="info-item mb-3">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="bi bi-clock-history text-warning me-2"></i>
+                            <h6 class="mb-0">İşlem Süresi</h6>
+                        </div>
+                        <p class="text-muted small mb-0">Analiz ortalama 3-5 saniye sürmektedir.</p>
+                    </div>
+                    <div class="info-item">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="bi bi-question-circle text-info me-2"></i>
+                            <h6 class="mb-0">Yardım</h6>
+                        </div>
+                        <p class="text-muted small mb-0">Sorun yaşarsanız destek ekibimizle iletişime geçebilirsiniz.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Custom CSS -->
+<style>
+    :root {
+        --primary-color: #2C3E50;
+        --secondary-color: #2980B9;
+        --accent-color: #3498DB;
+        --success-color: #27AE60;
+        --warning-color: #F39C12;
+        --danger-color: #E74C3C;
+        --info-color: #3498DB;
+        --light-bg: #F5F6FA;
+        --border-color: #E2E8F0;
+    }
+    .bg-gradient-primary-to-secondary {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+        box-shadow: 0 4px 15px rgba(44, 62, 80, 0.1);
+    }
+
+    .btn-primary {
+        background-color: var(--accent-color);
+        border-color: var(--accent-color);
+        box-shadow: 0 2px 4px rgba(52, 152, 219, 0.1);
+    }
+
+    .btn-primary:hover {
+        background-color: #2980B9;
+        border-color: #2980B9;
+        transform: translateY(-1px);
+    }
+
+    .upload-area {
+        border: 2px dashed var(--border-color);
+        background-color: var(--light-bg);
+        transition: all 0.3s ease;
+    }
+
+    .upload-area:hover {
+        border-color: var(--accent-color);
+        background-color: #EBF5FB;
+    }
+
+    .card {
+        background: #FFFFFF;
+        box-shadow: 0 2px 12px rgba(44, 62, 80, 0.05);
+    }
+
+    .health-history {
+        background-color: #F8FAFC;
+        border: 1px solid var(--border-color);
+    }
+
+    .form-check-input:checked {
+        background-color: var(--accent-color);
+        border-color: var(--accent-color);
+    }
+
+    .text-primary {
+        color: var(--accent-color) !important;
+    }
+
+    .text-success {
+        color: var(--success-color) !important;
+    }
+
+    .text-warning {
+        color: var(--warning-color) !important;
+    }
+
+    .text-info {
+        color: var(--info-color) !important;
+    }
+
+    .info-item {
+        padding-bottom: 1.25rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .info-item:last-child {
+        padding-bottom: 0;
+        border-bottom: none;
+    }
+
+    /* Form elemanları için özel stiller */
+    .form-control:focus {
+        border-color: var(--accent-color);
+        box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.15);
+    }
+
+    .form-switch .form-check-input:checked {
+        background-color: var(--success-color);
+        border-color: var(--success-color);
+    }
+</style>
+
+<!-- Custom JavaScript -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Form doğrulama
+    const form = document.getElementById('predictionForm');
+
+    form.addEventListener('submit', function(event) {
+        if (!form.checkValidity()) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+    });
+
+    // Sigara Kullanım Geçmişi kontrolü
+    const smokingHistoryCheckbox = document.getElementById("{{ form.smoking_history.id_for_label }}");
+    const smokingYearsField = document.getElementById("{{ form.smoking_years.id_for_label }}");
+    const cigarettesPerDayField = document.getElementById("{{ form.cigarettes_per_day.id_for_label }}");
+
+    smokingHistoryCheckbox.addEventListener("change", function() {
+        if (smokingHistoryCheckbox.checked) {
+            smokingYearsField.setAttribute('required', 'true');
+            cigarettesPerDayField.setAttribute('required', 'true');
+        } else {
+            smokingYearsField.removeAttribute('required');
+            cigarettesPerDayField.removeAttribute('required');
+        }
+    });
+
+    // Akciğer Hastalığı Geçmişi kontrolü
+    const lungDiseaseCheckbox = document.getElementById("{{ form.has_lung_disease.id_for_label }}");
+    const lungDiseasesField = document.getElementById("{{ form.lung_diseases.id_for_label }}");
+
+    lungDiseaseCheckbox.addEventListener("change", function() {
+        if (lungDiseaseCheckbox.checked) {
+            lungDiseasesField.setAttribute('required', 'true');
+        } else {
+            lungDiseasesField.removeAttribute('required');
+        }
+    });
+
+    // Mesleki Maruziyet kontrolü
+    const occupationalExposureCheckbox = document.getElementById("{{ form.occupational_exposure.id_for_label }}");
+    const exposureDetailsField = document.getElementById("{{ form.exposure_details.id_for_label }}");
+
+    occupationalExposureCheckbox.addEventListener("change", function() {
+        if (occupationalExposureCheckbox.checked) {
+            exposureDetailsField.setAttribute('required', 'true');
+        } else {
+            exposureDetailsField.removeAttribute('required');
+        }
+    });
+
+    // İlk yüklemede seçimleri kontrol et
+    if (smokingHistoryCheckbox.checked) {
+        smokingYearsField.setAttribute('required', 'true');
+        cigarettesPerDayField.setAttribute('required', 'true');
+    }
+    if (lungDiseaseCheckbox.checked) {
+        lungDiseasesField.setAttribute('required', 'true');
+    }
+    if (occupationalExposureCheckbox.checked) {
+        exposureDetailsField.setAttribute('required', 'true');
+    }
+
+    // Dosya yükleme önizleme
+    const fileInput = document.querySelector('input[type="file"]');
+    const uploadArea = document.querySelector('.upload-area');
+
+    fileInput.addEventListener('change', function(e) {
+        if (e.target.files.length > 0) {
+            const fileName = e.target.files[0].name;
+            const fileSize = (e.target.files[0].size / 1024 / 1024).toFixed(2);
+
+            const uploadText = document.querySelector('.upload-text');
+            uploadText.innerHTML = `
+                <h5 class="mb-2">${fileName}</h5>
+                <p class="text-muted small mb-0">Dosya boyutu: ${fileSize}MB</p>
+            `;
+        }
+    });
+
+    // Drag and drop desteği
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        uploadArea.addEventListener(eventName, preventDefaults, false);
+    });
+
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+        uploadArea.addEventListener(eventName, highlight, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        uploadArea.addEventListener(eventName, unhighlight, false);
+    });
+
+    function highlight(e) {
+        uploadArea.classList.add('bg-light');
+    }
+
+    function unhighlight(e) {
+        uploadArea.classList.remove('bg-light');
+    }
+
+    function toggleFields(checkboxId, sectionId) {
+        let checkbox = document.getElementById(checkboxId);
+        let section = document.getElementById(sectionId);
+        if (checkbox && section) {
+            section.style.display = checkbox.checked ? "block" : "none";
+        }
+    }
+
+    // İlk yüklemede seçimleri kontrol et
+    toggleFields("{{ form.smoking_history.id_for_label }}", "smokingDetails");
+    toggleFields("{{ form.has_lung_disease.id_for_label }}", "lungDiseaseDetails");
+    toggleFields("{{ form.occupational_exposure.id_for_label }}", "exposureDetails");
+
+    // Değişiklikleri dinle
+    document.getElementById("{{ form.smoking_history.id_for_label }}").addEventListener("change", function() {
+        toggleFields("{{ form.smoking_history.id_for_label }}", "smokingDetails");
+    });
+
+    document.getElementById("{{ form.has_lung_disease.id_for_label }}").addEventListener("change", function() {
+        toggleFields("{{ form.has_lung_disease.id_for_label }}", "lungDiseaseDetails");
+    });
+
+    document.getElementById("{{ form.occupational_exposure.id_for_label }}").addEventListener("change", function() {
+        toggleFields("{{ form.occupational_exposure.id_for_label }}", "exposureDetails");
+    });
+
+      // Kronik öksürük seçildiğinde öksürük süresi zorunlu hale gelsin
+    const chronicCoughCheckbox = document.getElementById("{{ form.chronic_cough.id_for_label }}");
+    const coughDurationDiv = document.getElementById("coughDurationDiv");
+    const coughDurationInput = document.querySelector("input[name='cough_duration']");
+
+    // Sayfa yüklendiğinde, kronik öksürük seçili değilse öksürük süresi gizlensin
+    if (!chronicCoughCheckbox.checked) {
+        coughDurationDiv.style.display = "none";
+        coughDurationInput.removeAttribute('required');
+    }
+
+    chronicCoughCheckbox.addEventListener("change", function() {
+        if (chronicCoughCheckbox.checked) {
+            coughDurationDiv.style.display = "block";
+            coughDurationInput.setAttribute('required', 'true');
+        } else {
+            coughDurationDiv.style.display = "none";
+            coughDurationInput.removeAttribute('required');
+        }
+    });
+});
+</script>
+
+{% endblock %}

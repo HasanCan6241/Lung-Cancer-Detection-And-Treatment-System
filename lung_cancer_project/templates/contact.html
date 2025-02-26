@@ -1,0 +1,191 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<!-- Header Section -->
+<div class="bg-gradient-primary-to-secondary py-4 mb-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center">
+                <h1 class="text-white fw-bold mb-2">İletişime Geçin</h1>
+                <p class="text-white-50 mb-0">Sorularınız ve önerileriniz için bize ulaşın</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row g-4">
+        <!-- İletişim Bilgileri -->
+        <div class="col-lg-4">
+            <div class="card shadow-sm border-0 rounded-4 h-100">
+                <div class="card-body p-4">
+                    <div class="contact-info-item mb-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="icon-box bg-primary bg-opacity-10 rounded-3 p-3 me-3">
+                                <i class="bi bi-geo-alt text-primary fs-4"></i>
+                            </div>
+                            <h5 class="mb-0">Adres</h5>
+                        </div>
+                        <p class="text-muted mb-0">Örnek Mahallesi, Teknoloji Caddesi No:123</p>
+                    </div>
+
+                    <div class="contact-info-item mb-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="icon-box bg-success bg-opacity-10 rounded-3 p-3 me-3">
+                                <i class="bi bi-envelope text-success fs-4"></i>
+                            </div>
+                            <h5 class="mb-0">E-posta</h5>
+                        </div>
+                        <p class="text-muted mb-0">hasancan.celik6241@gmail.com</p>
+                    </div>
+
+                    <div class="contact-info-item">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="icon-box bg-info bg-opacity-10 rounded-3 p-3 me-3">
+                                <i class="bi bi-telephone text-info fs-4"></i>
+                            </div>
+                            <h5 class="mb-0">Telefon</h5>
+                        </div>
+                        <p class="text-muted mb-0">+90 (XXX) XXX XX XX</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- İletişim Formu -->
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-body p-4">
+                    <h4 class="card-title mb-4">Mesaj Gönderin</h4>
+                    <form method="post" id="contactForm" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        {{ form|crispy }}
+                        <div class="text-end mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg px-5">
+                                <i class="bi bi-send me-2"></i>Gönder
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Harita -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-body p-0">
+                    <div class="map-container rounded-4">
+                        <iframe
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3019.9528464407878!2d29.0217!3d41.0053!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNDHCsDAwJzE5LjEiTiAyOcKwMDEnMTguMSJF!5e0!3m2!1str!2str!4v1234567890!5m2!1str!2str"
+                            width="100%"
+                            height="400"
+                            style="border:0;"
+                            allowfullscreen=""
+                            loading="lazy">
+                        </iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Custom CSS -->
+<style>
+    :root {
+        --primary-color: #2C3E50;
+        --secondary-color: #2980B9;
+        --success-color: #27AE60;
+        --info-color: #3498DB;
+    }
+
+    .bg-gradient-primary-to-secondary {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    }
+
+    .icon-box {
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: transform 0.3s ease;
+    }
+
+    .contact-info-item:hover .icon-box {
+        transform: scale(1.1);
+    }
+
+    .card {
+        transition: transform 0.3s ease;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+    }
+
+    .map-container {
+        overflow: hidden;
+        position: relative;
+    }
+
+    .map-container iframe {
+        transition: opacity 0.3s ease;
+    }
+
+    .map-container:hover iframe {
+        opacity: 0.9;
+    }
+
+    .btn-primary {
+        border-color: var(--primary-color);
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        background-color: var(--secondary-color);
+        border-color: var(--secondary-color);
+        transform: translateY(-2px);
+    }
+
+    /* Form stilleri */
+    .form-control:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.2rem rgba(44, 62, 80, 0.15);
+    }
+</style>
+
+<!-- Custom JavaScript -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Form doğrulama
+    const form = document.getElementById('contactForm');
+
+    form.addEventListener('submit', function(event) {
+        if (!form.checkValidity()) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+    });
+
+    // Animasyonlar için Intersection Observer
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('animate__animated', 'animate__fadeInUp');
+            }
+        });
+    }, {
+        threshold: 0.1
+    });
+
+    document.querySelectorAll('.card').forEach(card => {
+        observer.observe(card);
+    });
+});
+</script>
+{% endblock %}

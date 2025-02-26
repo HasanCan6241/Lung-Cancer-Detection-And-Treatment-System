@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="about-section py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center">
+                <h1 class="mb-4 fw-bold text-primary">Hakkımızda</h1>
+                <p class="lead text-muted">Akciğer kanseri teşhisinde yapay zeka teknolojileri kullanarak sağlık profesyonellerine yardımcı oluyoruz.</p>
+            </div>
+        </div>
+
+        <div class="row mt-5">
+            <div class="col-md-6 mb-4">
+                <div class="card shadow-lg border-0 h-100">
+                    <div class="card-body text-center">
+                        <h5 class="card-title text-uppercase fw-bold text-dark">Misyonumuz</h5>
+                        <p class="card-text text-muted">Erken teşhis sürecini hızlandırarak sağlık sektörüne katkı sağlamak amacıyla çalışıyoruz. Yapay zeka destekli sistemimiz, sağlık uzmanlarının teşhis sürecini hızlandırmasına yardımcı olurken, hastaların da erken teşhis avantajından yararlanmasını sağlar. Hastalıkların ilerlemesini önlemek ve yaşam kalitesini artırmak için yenilikçi teknolojileri sağlık hizmetleriyle buluşturuyoruz.</p>
+                        <p class="card-text text-muted">Ayrıca, tıp dünyasındaki gelişmeleri yakından takip ederek, yapay zeka modellerimizi sürekli güncelliyor ve en yüksek doğruluk oranlarını elde etmek için çalışmalarımızı sürdürüyoruz.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 mb-4">
+                <div class="card shadow-lg border-0 h-100">
+                    <div class="card-body text-center">
+                        <h5 class="card-title text-uppercase fw-bold text-dark">Teknolojimiz</h5>
+                        <p class="card-text text-muted">Geliştirdiğimiz yapay zeka modeli dört farklı durumu tespit edebilir:</p>
+                        <ul class="list-unstyled mt-3 text-success">
+                            <li><i class="bi bi-check-circle-fill"></i> Adenocarcinoma</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Large Cell Carcinoma</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Normal</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Squamous Cell Carcinoma</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-md-6 mb-4">
+                <div class="card shadow-lg border-0 text-center p-4 bg-light">
+                    <div class="card-body">
+                        <h5 class="card-title text-uppercase fw-bold text-dark">Veri Güvenliği</h5>
+                        <p class="card-text text-muted">Tüm yüklenen görüntüler ve kişisel bilgiler güvenli bir şekilde saklanmaktadır ve üçüncü taraflarla paylaşılmamaktadır.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 mb-4">
+                <div class="card shadow-lg border-0 text-center p-4 bg-light">
+                    <div class="card-body">
+                        <h5 class="card-title text-uppercase fw-bold text-dark">Hasta Destek Hizmetleri</h5>
+                        <p class="card-text text-muted">Hasta destek ekibimiz, kullanıcıların sistemimizi verimli bir şekilde kullanmalarını sağlamak için 7/24 hizmet vermektedir.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    .about-section {
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    }
+    .card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+</style>
+{% endblock %}

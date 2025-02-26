@@ -1,0 +1,375 @@
+{% extends 'base.html' %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gelişmiş Akciğer Kanseri Analizi</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2C3E50;
+            --secondary-color: #34495E;
+            --accent-color: #3498DB;
+            --success-color: #27AE60;
+            --warning-color: #F1C40F;
+            --danger-color: #E74C3C;
+            --light-bg: #F8F9FA;
+            --dark-bg: #2C3E50;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            color: var(--primary-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .dashboard-container {
+            padding: 2rem;
+            max-width: 3000px;
+            margin: 0 auto;
+        }
+
+        .dashboard-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .dashboard-card {
+            background: white;
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            height: 100%;
+            margin-bottom: 1.5rem;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, var(--accent-color), var(--secondary-color));
+            color: white;
+        }
+
+        .stat-card .card-title {
+            font-size: 1rem;
+            font-weight: 500;
+            opacity: 0.9;
+        }
+
+        .stat-card .card-text {
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-bottom: 0;
+        }
+
+        .chart-container {
+            min-height: 450px;
+            padding: 1rem;
+            position: relative;
+        }
+
+        .section-title {
+            color: var(--primary-color);
+            padding: 1.5rem 0;
+            margin: 2rem 0 1rem 0;
+            font-weight: 600;
+            border-bottom: 2px solid rgba(44, 62, 80, 0.1);
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100px;
+            height: 2px;
+            background: var(--accent-color);
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        .card-title {
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-container {
+                padding: 1rem;
+            }
+
+            .chart-container {
+                min-height: 350px;
+            }
+
+            .stat-card .card-text {
+                font-size: 1.5rem;
+            }
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent-color);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--secondary-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid py-4">
+        <h2 class="text-center mb-4">Akciğer Kanseri Tahmin Analizi</h2>
+
+        <!-- Ana Metrikler -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-3">
+                <div class="dashboard-card stat-card">
+                    <div class="card-body">
+                        <h5 class="card-title">Toplam Tahmin Analizi</h5>
+                        <h3 class="card-text">{{ total_predictions }}</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="dashboard-card stat-card">
+                    <div class="card-body">
+                        <h5 class="card-title">Pozitif Tahmin Oranı</h5>
+                        <h3 class="card-text">{{ positive_rate }}%</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="dashboard-card stat-card">
+                    <div class="card-body">
+                        <h5 class="card-title">Ortalama Güven Skoru</h5>
+                        <h3 class="card-text">{{ avg_confidence }}%</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="dashboard-card stat-card">
+                    <div class="card-body">
+                        <h5 class="card-title">Ortalama Yaş</h5>
+                        <h3 class="card-text">{{ avg_age }}</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+       <!-- Genel Tahmin Analizi -->
+        <h3 class="section-title">Genel Tahmin Analizi</h3>
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="dashboard-card">
+                    <div class="card-body">
+                        <h5 class="card-title">Tahmin Sonuçlarının Tarihsel Değişimi</h5>
+                        <div class="chart-container">
+                            {{ time_series_plot|safe }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="dashboard-card">
+                    <div class="card-body">
+                        <h5 class="card-title">Güven Skoru Dağılımı</h5>
+                        <div class="chart-container">
+                            {{ confidence_plot|safe }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Demografik Analiz -->
+        <h3 class="section-title">Demografik Analiz</h3>
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="dashboard-card">
+                    <div class="card-body">
+                        <h5 class="card-title">Cinsiyet Dağılımı ve Tahmin Sonuçları</h5>
+                        <div class="chart-container">
+                            {{ gender_prediction_plot|safe }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="dashboard-card">
+                    <div class="card-body">
+                        <h5 class="card-title">Yaş Dağılımı ve Tahmin Sonuçları</h5>
+                        <div class="chart-container">
+                            {{ age_distribution_plot|safe }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="dashboard-card">
+                    <div class="card-body">
+                        <h5 class="card-title">Cinsiyet Oranları</h5>
+                        <div class="chart-container">
+                            {{ gender_ratio_plot|safe }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="dashboard-card">
+                    <div class="card-body">
+                        <h5 class="card-title">Konumların Dağılımı</h5>
+                        <div class="chart-container">
+                            {{ location_distribution_plot|safe }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="dashboard-card">
+                    <div class="card-body">
+                        <h5 class="card-title">Konumlara Göre Tahmin</h5>
+                        <div class="chart-container">
+                            {{ location_plot|safe }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="dashboard-card">
+                    <div class="card-body">
+                        <h5 class="card-title">Yaş Aralığına Göre Tahmin</h5>
+                        <div class="chart-container">
+                            {{ age_prediction_plot|safe }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sigara Kullanım Analizi -->
+        <h3 class="section-title">Sigara Kullanım Analizi</h3>
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="dashboard-card">
+                    <div class="card-body">
+                        <h5 class="card-title">Sigara İçme Geçmişi ve Tahmin Sonuçları</h5>
+                        <div class="chart-container">
+                            {{ smoking_prediction_plot|safe }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="dashboard-card">
+                    <div class="card-body">
+                        <h5 class="card-title">Sigara İçme Yılları ve Tahmin Sonucu</h5>
+                        <div class="chart-container">
+                            {{ smoking_years_plot|safe }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4 mt-4">
+            <div class="col-md-6">
+                <div class="dashboard-card">
+                    <div class="card-body">
+                        <h5 class="card-title">Sigara Kullanım Dağılımı</h5>
+                        <div class="chart-container">
+                            {{ smoking_distribution_plot|safe }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="dashboard-card">
+                    <div class="card-body">
+                        <h5 class="card-title">Sigara Kullanıcı Oranı</h5>
+                        <div class="chart-container">
+                            {{ smoking_ratio_plot|safe }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Semptom ve Risk Analizi -->
+        <h3 class="section-title">Semptom ve Risk Analizi</h3>
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="dashboard-card">
+                    <div class="card-body">
+                        <h5 class="card-title">Tahmin Sonucu ve Semptomlar</h5>
+                        <div class="chart-container">
+                            {{ symptoms_prediction_plot|safe }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="dashboard-card">
+                    <div class="card-body">
+                        <h5 class="card-title">Kronik Öksürük ve Tahmin Sonuçları</h5>
+                        <div class="chart-container">
+                            {{ cough_prediction_plot|safe }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4 mt-4 mb-4">
+            <div class="col-md-6">
+                <div class="dashboard-card">
+                    <div class="card-body">
+                        <h5 class="card-title">Mesleki Maruziyet ve Tahmin Sonucu</h5>
+                        <div class="chart-container">
+                            {{ occupational_exposure_plot|safe }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="dashboard-card">
+                    <div class="card-body">
+                        <h5 class="card-title">Mesleki Maruziyet Oranı</h5>
+                        <div class="chart-container">
+                            {{ exposure_ratio_plot|safe }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+{% endblock %}

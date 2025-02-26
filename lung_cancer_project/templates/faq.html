@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="faq-section">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center mb-5">
+                <h1 class="display-4 fw-bold text-gradient mb-3">Sıkça Sorulan Sorular</h1>
+                <p class="lead text-muted">En çok merak edilen soruların cevaplarını aşağıda bulabilirsiniz.</p>
+                <div class="accent-line mx-auto"></div>
+            </div>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="faq-container">
+                    {% for faq in faqs %}
+                    <div class="faq-item mb-4">
+                        <div class="accordion-item border-0 rounded-3 shadow-sm">
+                            <h2 class="accordion-header" id="heading{{ forloop.counter }}">
+                                <button class="accordion-button {% if not forloop.first %}collapsed{% endif %} rounded-3"
+                                        type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#collapse{{ forloop.counter }}">
+                                    <span class="question-number">#{{ forloop.counter }}</span>
+                                    <span class="ms-3">{{ faq.question }}</span>
+                                </button>
+                            </h2>
+                            <div id="collapse{{ forloop.counter }}"
+                                 class="accordion-collapse collapse {% if forloop.first %}show{% endif %}"
+                                 data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    <p class="mb-0">{{ faq.answer|linebreaks }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="empty-state p-5 text-center rounded-3 shadow-sm">
+                        <svg class="mb-3" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="16" x2="12" y2="12"></line>
+                            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                        </svg>
+                        <h3 class="h5 mb-2">Henüz Soru Eklenmemiş</h3>
+                        <p class="text-muted mb-0">Yakında burada sorular ve cevapları olacak.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    .faq-section {
+        background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+        min-height: 100vh;
+    }
+
+    .text-gradient {
+        background: linear-gradient(45deg, #2d3436 0%, #636e72 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .accent-line {
+        height: 4px;
+        width: 60px;
+        background: linear-gradient(90deg, #00b894 0%, #00cec9 100%);
+        margin-top: 1.5rem;
+        border-radius: 2px;
+    }
+
+    .accordion-button {
+        padding: 1.25rem;
+        font-weight: 600;
+        color: #2d3436;
+        background: #ffffff;
+        transition: all 0.3s ease;
+    }
+
+    .accordion-button:not(.collapsed) {
+        color: #00b894;
+        background: #ffffff;
+        box-shadow: none;
+    }
+
+    .accordion-button:focus {
+        box-shadow: none;
+        border-color: rgba(0, 184, 148, 0.2);
+    }
+
+    .accordion-button::after {
+        background-size: 1.25rem;
+        transition: all 0.3s ease;
+    }
+
+    .question-number {
+        background: #f1f3f5;
+        color: #868e96;
+        padding: 0.25rem 0.75rem;
+        border-radius: 1rem;
+        font-size: 0.875rem;
+    }
+
+    .accordion-body {
+        padding: 1.5rem;
+        background: #f8f9fa;
+        border-bottom-left-radius: 0.5rem;
+        border-bottom-right-radius: 0.5rem;
+    }
+
+    .empty-state {
+        background: #ffffff;
+        color: #868e96;
+    }
+
+    .faq-item {
+        transition: transform 0.3s ease;
+    }
+
+    .faq-item:hover {
+        transform: translateY(-2px);
+    }
+
+    @media (max-width: 768px) {
+        .container {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+
+        .question-number {
+            display: none;
+        }
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,297 @@
+<!-- templates/base.html -->
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Akciğer Kanseri Tespit Sistemi</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap Icons Kütüphanesi -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+
+    <!-- Custom CSS -->
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8f9fa;
+            flex-direction: column;
+
+        }
+
+
+        .navbar {
+            background-color: #ffffff;
+            box-shadow: 0 2px 4px rgba(0,0,0,.08);
+            padding: 1rem 0;
+        }
+
+        .navbar-brand {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .nav-link {
+            color: #2c3e50 !important;
+            font-weight: 400;
+            padding: 0.5rem 1rem !important;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: #3498db !important;
+        }
+
+        .btn-primary {
+            background-color: #3498db;
+            border-color: #3498db;
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: #2980b9;
+            border-color: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,.1);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,.1);
+        }
+
+         .footer {
+            background-color: #1F5199; /* Koyu ve modern bir arka plan */
+            color: #F8F9FA;
+            padding: 3rem 0;
+            margin-top: 4rem;
+        }
+
+        .footer h5 {
+            color: #FFD700; /* Altın sarısı, dikkat çekici */
+        }
+
+        .footer a {
+            color: #B0BEC5; /* Açık gri-mavi ton */
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer a:hover {
+            color: #FFD700; /* Altın sarısı, hover efekti */
+        }
+
+        .footer ul {
+            padding-left: 0;
+        }
+
+        .footer ul li {
+            list-style: none;
+            margin-bottom: 8px;
+        }
+
+        .footer i {
+            color: #FFD700; /* Altın sarısı ikonlar */
+        }
+
+        hr {
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .text-muted {
+            color: #B0BEC5 !important; /* Daha okunaklı gri tonu */
+        }
+
+        .alert {
+            border-radius: 15px;
+            border: none;
+        }
+
+        /* Animation classes */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'home' %}">
+                <i class="fas fa-lungs me-2"></i>
+                Kanser Tespiti
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'home' %}">
+                            <i class="fas fa-home me-1"></i> Anasayfa
+                        </a>
+                    </li>
+                    {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'analysis_dashboard' %}">
+                            <i class="fas fa-chart-bar me-1"></i> Veri Analizi
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'chatbot' %}">
+                            <i class="fas fa-heartbeat me-1"></i> Sağlık Asistanı
+                        </a>
+                    </li>
+                    {% endif %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'faq' %}">
+                            <i class="fas fa-question-circle me-1"></i> SSS
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'about' %}">
+                            <i class="fas fa-info-circle me-1"></i> Hakkımızda
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'contact' %}">
+                            <i class="fas fa-envelope me-1"></i> İletişim
+                        </a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    {% if user.is_authenticated %}
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                     <i class="fas fa-user me-1"></i> {{ user.username }}
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <li><a class="dropdown-item" href="{% url 'dashboard' %}"><i class="fas fa-robot me-1"></i> Kanser Tespit</a></li>
+                                    <li><a class="dropdown-item" href="{% url 'prediction_history' %}"><i class="fas fa-history me-1"></i> Yönetim Paneli</a></li>
+                                </ul>
+                            </li>
+                        <li class="nav-item">
+                            <form id="logout-form" method="post" action="{% url 'logout' %}" style="display: none;">
+                                {% csrf_token %}
+                            </form>
+                            <a class="nav-link" href="#" onclick="document.getElementById('logout-form').submit(); return false;"> <i class="fas fa-sign-out-alt me-1"></i>Çıkış</a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'login' %}">
+                                <i class="fas fa-sign-in-alt me-1"></i> Giriş
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link btn btn-primary text-white ms-2" href="{% url 'register' %}">
+                                <i class="fas fa-user-plus me-1"></i> Kayıt Ol
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Messages -->
+    {% if messages %}
+        <div class="container mt-4">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- Main Content -->
+    <main class="container py-4">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <!-- Hakkımızda -->
+                <div class="col-md-4">
+                    <h5 class="mb-3">Hakkımızda</h5>
+                    <p class="text-muted">
+                        Yapay zeka destekli akciğer kanseri tespit sistemi ile erken teşhis imkanı sunuyoruz.
+                    </p>
+                </div>
+
+                <!-- Hızlı Linkler -->
+                <div class="col-md-4">
+                    <h5 class="mb-3">Hızlı Linkler</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="{% url 'home' %}">Anasayfa</a></li>
+                        <li><a href="{% url 'about' %}">Hakkımızda</a></li>
+                        <li><a href="{% url 'faq' %}">SSS</a></li>
+                        <li><a href="{% url 'contact' %}">İletişim</a></li>
+                    </ul>
+                </div>
+
+                <!-- İletişim -->
+                <div class="col-md-4">
+                    <h5 class="mb-3">İletişim</h5>
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-map-marker-alt me-2"></i> Örnek Mah. Teknoloji Cad. No:123</li>
+                        <li><i class="fas fa-phone me-2"></i> +90 (XXX) XXX XX XX</li>
+                        <li><i class="fas fa-envelope me-2"></i> hasancan.celik6241@gmail.com</li>
+                    </ul>
+                </div>
+            </div>
+
+            <hr class="mt-4 mb-3">
+
+            <div class="text-center">
+                <small>&copy; 2024 Akciğer Kanseri Tespit Sistemi. Tüm hakları saklıdır.</small>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        // Add fade-in animation to cards and content sections
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.card, .content-section').forEach(element => {
+                element.classList.add('fade-in');
+            });
+        });
+
+        // Active nav link highlighting
+        const currentLocation = location.href;
+        document.querySelectorAll('.nav-link').forEach(link => {
+            if (link.href === currentLocation) {
+                link.classList.add('active');
+            }
+        });
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

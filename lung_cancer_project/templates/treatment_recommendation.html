@@ -1,0 +1,361 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section bg-gradient-primary text-white py-4 mb-4">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="display-5 fw-bold mb-2">Tedavi Önerisi</h1>
+                <p class="lead opacity-75 mb-0">
+                    Yapay zeka destekli kişiselleştirilmiş tedavi planı
+                </p>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <span class="badge bg-light text-primary fs-6">
+                    <i class="bi bi-clock-history me-1"></i>
+                    {{ prediction.created_at|date:"d.m.Y" }}
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container pb-5">
+    <div class="row g-4">
+        <!-- Sol Kolon: Hasta Bilgileri -->
+        <div class="col-md-4">
+            <div class="position-sticky" style="top: 2rem;">
+                <!-- Hasta Profil Kartı -->
+                <div class="card border-0 shadow-sm rounded-4 mb-4 overflow-hidden">
+                    <div class="card-header border-0 bg-gradient-secondary text-white py-3">
+                        <div class="d-flex align-items-center">
+                            <div class="patient-avatar rounded-circle bg-white text-primary d-flex align-items-center justify-content-center me-3"
+                                 style="width: 48px; height: 48px;">
+                                <i class="bi bi-person-fill fs-4"></i>
+                            </div>
+                            <div>
+                                <h5 class="card-title mb-0">Hasta Bilgileri</h5>
+                                <small class="opacity-75">ID: #{{ prediction.id }}</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <div class="info-label text-muted small">Yaş</div>
+                                <div class="info-value fw-medium">{{ patient_info.yaş }}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label text-muted small">Cinsiyet</div>
+                                <div class="info-value fw-medium">{{ patient_info.cinsiyet }}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label text-muted small">Tanı</div>
+                                <div class="info-value fw-medium text-primary">{{ patient_info.tanı }}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label text-muted small">Güven Skoru</div>
+                                <div class="info-value">
+                                    <div class="progress" style="height: 6px;">
+                                        <div class="progress-bar bg-success"
+                                             role="progressbar"
+                                             style="width: {{ patient_info.güven_skoru }}"></div>
+                                    </div>
+                                    <small class="text-success mt-1 d-block">{{ patient_info.güven_skoru }}</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer border-0 bg-light">
+                        <button class="btn btn-primary w-100 rounded-3 d-flex align-items-center justify-content-center"
+                                id="generateRecommendation">
+                            <i class="bi bi-magic me-2"></i>
+                            <span>Tedavi Önerisi Oluştur</span>
+                        </button>
+                    </div>
+                </div>
+
+               <!-- Tanı Özeti Kartı -->
+                <div class="card border-0 shadow-sm rounded-4 bg-light">
+                    <div class="card-body">
+                        <h6 class="text-muted mb-3">
+                            <i class="bi bi-journal-medical me-2"></i>Tanı Özeti
+                        </h6>
+                        <div class="diagnosis-tags">
+                            <!-- Sigara Kullanımı ile İlgili Badge'ler -->
+                            {% if prediction.smoking_history %}
+                            <span class="badge bg-warning text-dark mb-2 me-2">
+                                <i class="bi bi-slash-circle me-1"></i>Sigara Kullanımı
+                            </span>
+                            {% endif %}
+                            {% if prediction.passive_smoking %}
+                            <span class="badge bg-warning text-dark mb-2 me-2">
+                                <i class="bi bi-wind me-1"></i>Pasif İçicilik
+                            </span>
+                            {% endif %}
+
+                            <!-- Tıbbi Geçmiş Badge'leri -->
+                            {% if prediction.family_history %}
+                            <span class="badge bg-info text-dark mb-2 me-2">
+                                <i class="bi bi-people me-1"></i>Aile Geçmişi
+                            </span>
+                            {% endif %}
+                            {% if prediction.has_lung_disease %}
+                            <span class="badge bg-danger text-white mb-2 me-2">
+                                <i class="bi bi-lungs me-1"></i>Akciğer Hastalığı
+                            </span>
+                            {% endif %}
+                            {% if prediction.previous_lung_infections %}
+                            <span class="badge bg-danger text-white mb-2 me-2">
+                                <i class="bi bi-virus me-1"></i>Geçmiş Enfeksiyonlar
+                            </span>
+                            {% endif %}
+
+                            <!-- Semptom Badge'leri -->
+                            {% if prediction.chronic_cough %}
+                            <span class="badge bg-danger text-white mb-2 me-2">
+                                <i class="bi bi-activity me-1"></i>Kronik Öksürük
+                            </span>
+                            {% endif %}
+                            {% if prediction.shortness_of_breath %}
+                            <span class="badge bg-danger text-white mb-2 me-2">
+                                <i class="bi bi-heart-pulse me-1"></i>Nefes Darlığı
+                            </span>
+                            {% endif %}
+                            {% if prediction.chest_pain %}
+                            <span class="badge bg-danger text-white mb-2 me-2">
+                                <i class="bi bi-heart me-1"></i>Göğüs Ağrısı
+                            </span>
+                            {% endif %}
+                            {% if prediction.weight_loss %}
+                            <span class="badge bg-warning text-dark mb-2 me-2">
+                                <i class="bi bi-graph-down me-1"></i>Kilo Kaybı
+                            </span>
+                            {% endif %}
+                            {% if prediction.fatigue %}
+                            <span class="badge bg-warning text-dark mb-2 me-2">
+                                <i class="bi bi-battery-half me-1"></i>Yorgunluk
+                            </span>
+                            {% endif %}
+                            {% if prediction.sputum_production %}
+                            <span class="badge bg-danger text-white mb-2 me-2">
+                                <i class="bi bi-droplet me-1"></i>Balgam Üretimi
+                            </span>
+                            {% endif %}
+
+                            <!-- Risk Faktörleri Badge'leri -->
+                            {% if prediction.occupational_exposure %}
+                            <span class="badge bg-primary text-white mb-2 me-2">
+                                <i class="bi bi-building me-1"></i>Mesleki Maruziyet
+                            </span>
+                            {% endif %}
+                            {% if prediction.air_pollution_exposure %}
+                            <span class="badge bg-primary text-white mb-2 me-2">
+                                <i class="bi bi-cloud-haze me-1"></i>Hava Kirliliği Maruziyeti
+                            </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sağ Kolon: Tedavi Önerisi -->
+        <div class="col-md-8">
+            <!-- Yükleniyor Spinner -->
+            <div id="loadingSpinner" style="display: none;">
+                <div class="card border-0 shadow-sm rounded-4 bg-light">
+                    <div class="card-body py-5">
+                        <div class="text-center">
+                            <div class="spinner-ring mb-3">
+                                <div></div><div></div><div></div><div></div>
+                            </div>
+                            <h5 class="mb-2">Tedavi Önerisi Oluşturuluyor</h5>
+                            <p class="text-muted mb-0">Yapay zeka modelimiz size özel bir öneri hazırlıyor...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tedavi Önerisi Kartı -->
+            <div id="recommendationCard" style="display: none;">
+                <div class="card border-0 shadow-sm rounded-4">
+                    <div class="card-header border-0 bg-white py-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h4 class="mb-0">
+                                <i class="bi bi-clipboard2-pulse-fill me-2 text-primary"></i>
+                                Tedavi Önerisi
+                            </h4>
+                            <div class="actions">
+                                <button class="btn btn-light me-2" onclick="window.print()">
+                                    <i class="bi bi-printer-fill me-2"></i>Yazdır
+                                </button>
+                                <button class="btn btn-primary" onclick="shareRecommendation()">
+                                    <i class="bi bi-share-fill me-2"></i>Paylaş
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="recommendation-content" id="recommendationText">
+                            <!-- İçerik AJAX ile doldurulacak -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .bg-gradient-primary {
+        background: linear-gradient(45deg, #2948ff, #396afc);
+    }
+
+    .bg-gradient-secondary {
+        background: linear-gradient(45deg, #3a3a3a, #4a4a4a);
+    }
+
+    .info-grid {
+        display: grid;
+        gap: 1.5rem;
+    }
+
+    .info-item {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .recommendation-content {
+        font-size: 1.1rem;
+        line-height: 1.8;
+        color: #2c3e50;
+    }
+
+   .diagnosis-tags .badge {
+    padding: 0.5rem 1rem;
+    font-weight: 500;
+    font-size: 0.85rem;
+    border-radius: 50rem;
+    transition: all 0.2s ease-in-out;
+    }
+
+    .diagnosis-tags .badge:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .diagnosis-tags .badge i {
+        font-size: 0.9rem;
+    }
+
+    /* Badge renk grupları */
+    .badge.bg-danger {
+        background-color: #dc3545 !important;
+    }
+
+    .badge.bg-warning {
+        background-color: #ffc107 !important;
+    }
+
+    .badge.bg-info {
+        background-color: #0dcaf0 !important;
+    }
+
+    .badge.bg-primary {
+        background-color: #0d6efd !important;
+    }
+
+    /* Modern Spinner Animation */
+    .spinner-ring {
+        display: inline-block;
+        position: relative;
+        width: 64px;
+        height: 64px;
+    }
+
+    .spinner-ring div {
+        position: absolute;
+        width: 51px;
+        height: 51px;
+        border: 5px solid #396afc;
+        border-radius: 50%;
+        animation: spinner-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+        border-color: #396afc transparent transparent transparent;
+    }
+
+    .spinner-ring div:nth-child(1) { animation-delay: -0.45s; }
+    .spinner-ring div:nth-child(2) { animation-delay: -0.3s; }
+    .spinner-ring div:nth-child(3) { animation-delay: -0.15s; }
+
+    @keyframes spinner-ring {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    @media print {
+        .hero-section, .btn, .card-footer, .actions {
+            display: none !important;
+        }
+        .card {
+            box-shadow: none !important;
+            border: 1px solid #dee2e6 !important;
+        }
+    }
+</style>
+
+<script>
+document.getElementById('generateRecommendation').addEventListener('click', function() {
+    document.getElementById('loadingSpinner').style.display = 'block';
+    document.getElementById('recommendationCard').style.display = 'none';
+
+    fetch('{% url "get_recommendation" prediction.id %}')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const formattedRecommendation = formatRecommendation(data.recommendation);
+                document.getElementById('recommendationText').innerHTML = formattedRecommendation;
+
+                document.getElementById('loadingSpinner').style.display = 'none';
+                document.getElementById('recommendationCard').style.display = 'block';
+            } else {
+                throw new Error(data.error || 'Bir hata oluştu');
+            }
+        })
+        .catch(error => {
+            showError('Öneri oluşturulurken bir hata oluştu. Lütfen tekrar deneyin.');
+            document.getElementById('loadingSpinner').style.display = 'none';
+        });
+});
+
+function formatRecommendation(text) {
+    // Başlıkları formatla
+    text = text.replace(/^(\d+\.|#)\s*(.*?)$/gm, '<h5 class="mt-4 mb-3">$2</h5>');
+
+    // Paragrafları formatla
+    text = text.split('\n\n').map(paragraph =>
+        paragraph.trim().startsWith('<h5') ? paragraph : `<p>${paragraph}</p>`
+    ).join('');
+
+    return text;
+}
+
+function showError(message) {
+    // Burada daha şık bir hata gösterimi ekleyebilirsiniz
+    alert(message);
+}
+
+function shareRecommendation() {
+    // Paylaşım fonksiyonu (örnek)
+    if (navigator.share) {
+        navigator.share({
+            title: 'Tedavi Önerisi',
+            text: document.getElementById('recommendationText').innerText
+        }).catch(console.error);
+    }
+}
+</script>
+{% endblock %}

@@ -1,0 +1,372 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="chat-wrapper">
+    <div class="container-fluid h-100 p-0">
+        <div class="row h-100 g-0">
+            <!-- Sidebar -->
+            <div class="col-lg-3 border-end bg-white sidebar-container">
+                <div class="p-4">
+                    <div class="text-center mb-4">
+                        <div class="avatar-circle mb-3 mx-auto">
+                            <i class="bi bi-robot fs-2 text-white"></i>
+                        </div>
+                        <h4 class="mb-1">Akciğer Kanseri Asistanı</h4>
+                        <p class="text-muted small">7/24 Hizmetinizdeyiz</p>
+                    </div>
+                    <div class="border-top pt-4">
+                        <h6 class="text-muted mb-3">Hızlı Bilgiler</h6>
+                        <div class="quick-info-items">
+                            <div class="quick-info-item">
+                                <i class="bi bi-info-circle"></i>
+                                <span>Genel Bilgiler</span>
+                            </div>
+                            <div class="quick-info-item">
+                                <i class="bi bi-heart-pulse"></i>
+                                <span>Belirtiler</span>
+                            </div>
+                            <div class="quick-info-item">
+                                <i class="bi bi-clipboard2-pulse"></i>
+                                <span>Tedavi Yöntemleri</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat Area -->
+            <div class="col-lg-9 chat-container">
+                <!-- Chat Header -->
+                <div class="chat-header">
+                    <div class="d-flex align-items-center">
+                        <div class="online-indicator me-3"></div>
+                        <div>
+                            <h5 class="mb-0">Canlı Destek</h5>
+                            <small class="text-muted">Çevrimiçi</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Messages Area -->
+                <div class="messages-container" id="chat-messages">
+                    <div id="messages-container">
+                        <!-- Initial message -->
+                        <div class="message-row">
+                            <div class="message bot-message">
+                                <div class="message-content">
+                                    <p>Merhaba! Ben akciğer kanseri konusunda size yardımcı olacak bir sağlık asistanıyım. Nasıl yardımcı olabilirim?</p>
+                                </div>
+                                <small class="message-time">Şimdi</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Input Area -->
+                <div class="chat-input-area">
+                    <form id="chat-form" class="d-flex gap-3">
+                        {% csrf_token %}
+                        <div class="flex-grow-1 position-relative">
+                            <input type="text"
+                                   id="user-input"
+                                   class="form-control form-control-lg"
+                                   placeholder="Sorunuzu buraya yazın..."
+                                   required>
+                            <button type="button" class="btn btn-link position-absolute end-0 top-50 translate-middle-y">
+                                <i class="bi bi-emoji-smile"></i>
+                            </button>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-lg d-flex align-items-center">
+                            <i class="bi bi-send me-2"></i>
+                            Gönder
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Message Templates -->
+<template id="user-message-template">
+    <div class="message-row user-message-row">
+        <div class="message user-message">
+            <div class="message-content">
+                <p class="message-text"></p>
+            </div>
+            <small class="message-time"></small>
+        </div>
+    </div>
+</template>
+
+<template id="bot-message-template">
+    <div class="message-row">
+        <div class="message bot-message">
+            <div class="message-content">
+                <p class="message-text"></p>
+            </div>
+            <small class="message-time"></small>
+        </div>
+    </div>
+</template>
+
+<!-- Required CSS -->
+<style>
+/* Ensure the page takes full height */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+/* Ana wrapper */
+.chat-wrapper {
+    height: 90vh;
+    width: 100%;
+    overflow: hidden;
+}
+
+/* Sidebar */
+.sidebar-container {
+    height: 100%;
+    overflow-y: auto;
+}
+
+/* Chat container yapısı */
+.chat-container {
+    height: 90vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Chat header */
+.chat-header {
+    padding: 1rem;
+    background-color: white;
+    border-bottom: 1px solid #dee2e6;
+}
+
+/* Messages container */
+.messages-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem;
+    background-color: #f8f9fa;
+}
+
+/* Chat input area */
+.chat-input-area {
+    padding: 1rem;
+    background-color: white;
+    border-top: 1px solid #dee2e6;
+}
+
+/* Avatar styles */
+.avatar-circle {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(45deg, #2196F3, #1976D2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Online indicator */
+.online-indicator {
+    width: 12px;
+    height: 12px;
+    background-color: #4CAF50;
+    border-radius: 50%;
+    position: relative;
+}
+
+.online-indicator::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: #4CAF50;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+}
+
+/* Quick info items */
+.quick-info-items {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.quick-info-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    background-color: #f8f9fa;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.quick-info-item:hover {
+    background-color: #e9ecef;
+}
+
+/* Message styles */
+.message-row {
+    margin-bottom: 1rem;
+    display: flex;
+}
+
+.user-message-row {
+    justify-content: flex-end;
+}
+
+.message {
+    max-width: 70%;
+    display: flex;
+    flex-direction: column;
+}
+
+.message-content {
+    padding: 1rem;
+    border-radius: 1rem;
+    position: relative;
+}
+
+.bot-message .message-content {
+    background-color: white;
+    border: 1px solid #dee2e6;
+}
+
+.user-message .message-content {
+    background-color: #0d6efd;
+    color: white;
+}
+
+.message-time {
+    margin-top: 0.25rem;
+    color: #6c757d;
+    font-size: 0.75rem;
+}
+
+/* Animation */
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        opacity: 0.8;
+    }
+    70% {
+        transform: scale(1.5);
+        opacity: 0;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 0;
+    }
+}
+
+/* Responsive düzenlemeler */
+@media (max-width: 991.98px) {
+    .chat-wrapper {
+        height: calc(100vh - 56px); /* Mobile header height adjustment */
+    }
+
+    .sidebar-container {
+        height: auto;
+        max-height: 300px;
+    }
+
+    .chat-container {
+        height: calc(100vh - 356px); /* Adjust for mobile header + sidebar */
+    }
+}
+</style>
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('chat-form');
+    const input = document.getElementById('user-input');
+    const messagesContainer = document.getElementById('messages-container');
+
+    function getCurrentTime() {
+        return new Date().toLocaleTimeString('tr-TR', {
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    }
+
+    function appendMessage(message, isUser) {
+        const template = document.getElementById(
+            isUser ? 'user-message-template' : 'bot-message-template'
+        );
+        const clone = template.content.cloneNode(true);
+        clone.querySelector('.message-text').textContent = message;
+        clone.querySelector('.message-time').textContent = getCurrentTime();
+        messagesContainer.appendChild(clone);
+
+        // Scroll to bottom with smooth animation
+        const chatMessages = document.getElementById('chat-messages');
+        chatMessages.scrollTo({
+            top: chatMessages.scrollHeight,
+            behavior: 'smooth'
+        });
+    }
+
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const message = input.value.trim();
+        if (!message) return;
+
+        // Disable input and button while processing
+        const button = form.querySelector('button[type="submit"]');
+        input.disabled = true;
+        button.disabled = true;
+
+        // Show loading state
+        button.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Gönderiliyor...';
+
+        // Append user message
+        appendMessage(message, true);
+        input.value = '';
+
+        try {
+            const response = await fetch('/chat/message/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: JSON.stringify({ message: message })
+            });
+
+            const data = await response.json();
+            appendMessage(data.response, false);
+
+        } catch (error) {
+            appendMessage('Üzgünüm, bir hata oluştu. Lütfen tekrar deneyin.', false);
+        } finally {
+            // Reset button state
+            button.innerHTML = '<i class="bi bi-send me-2"></i>Gönder';
+
+            // Re-enable input and button
+            input.disabled = false;
+            button.disabled = false;
+            input.focus();
+        }
+    });
+
+    // Quick info items click handler
+    document.querySelectorAll('.quick-info-item').forEach(item => {
+        item.addEventListener('click', function() {
+            const topic = this.querySelector('span').textContent;
+            input.value = `${topic} hakkında bilgi alabilir miyim?`;
+            input.focus();
+        });
+    });
+});
+</script>
+{% endblock %}
+{% endblock %}
